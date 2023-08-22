@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ContactApp.Data.Repositories.Base
 {
-    public class BaseRepository<E> : IBaseRepository<E> where E : BaseEntity
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         protected readonly ContactAppContext dbContext;
 
@@ -13,14 +13,29 @@ namespace ContactApp.Data.Repositories.Base
             this.dbContext = dbContext;
         }
 
-        public async Task<E> GetById(int? id)
+        public async Task<T> GetByIdAsync(int? id)
         {
-            return await dbContext.Set<E>().FindAsync(id);
+            return await dbContext.Set<T>().FindAsync(id);
         }
 
-        public async Task<IEnumerable<E>> Get()
+        public async Task<IEnumerable<T>> GetAsync()
         {
-            return await dbContext.Set<E>().ToListAsync();
+            return await dbContext.Set<T>().ToListAsync();
+        }
+
+        public async Task AddAsync(T entity)
+        {
+            await dbContext.Set<T>().AddAsync(entity);
+        }
+
+        public void Update(T entity)
+        {
+            dbContext.Set<T>().Update(entity);
+        }
+
+        public void Delete(T entity)
+        {
+            dbContext.Set<T>().Remove(entity);
         }
     }
 }

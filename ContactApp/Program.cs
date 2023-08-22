@@ -1,15 +1,17 @@
 using ContactApp.Data.Context;
-using ContactApp.Data.Repositories;
 using ContactApp.Data.Repositories.Base;
-using ContactApp.Data.Repositories.Interfaces;
 using ContactApp.Data.Services;
 using ContactApp.Data.Services.Interfaces;
+using ContactApp.Data.UnitsOfWork;
+using ContactApp.Data.UnitsOfWork.Interfaces;
+using ContactApp.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddControllersWithViews();
 
 // Azure database
@@ -25,7 +27,9 @@ builder.Services.AddScoped<IContactService, ContactService>();
 
 // Repositories
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped<IContactRepository, ContactRepository>();
+
+// Units Of Work
+builder.Services.AddScoped<IContactUnitOfWork, ContactUnitOfWork>();
 
 #region Identity
 

@@ -4,7 +4,10 @@ namespace ContactApp.Data.Repositories.Base
 {
     public interface IBaseRepository<T> where T : BaseEntity
     {
-        Task<T> GetById(int? id);
-        Task<IEnumerable<T>> Get();
+        Task<T> GetByIdAsync(int? id);
+        Task<IEnumerable<T>> GetAsync();
+        Task AddAsync(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }

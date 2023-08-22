@@ -1,4 +1,5 @@
-﻿using ContactApp.Domain.Entities;
+﻿using ContactApp.Domain.DTOs;
+using ContactApp.Domain.Entities;
 
 namespace ContactApp.Data.Services.Interfaces
 {
@@ -6,5 +7,8 @@ namespace ContactApp.Data.Services.Interfaces
     {
         public Task<IEnumerable<Contact>> Get();
         Task<Contact> GetById(int? id);
+        Task AddAsync(ContactDTO contactDTO);
+        Task UpdateAsync(ContactDTO contactDTO);
+        Task DeleteAsync(int? id);
     }
 }

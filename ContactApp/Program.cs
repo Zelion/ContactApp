@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Azure database
 var connection = builder.Configuration.GetConnectionString("Azure_ConnectionString");
 builder.Services.AddDbContext<ContactAppContext>(options =>
     options.UseSqlServer(connection, o =>
@@ -25,10 +26,31 @@ builder.Services.AddScoped<IContactService, ContactService>();
 // Repositories
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ContactAppContext>();
+#region Identity
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    options.SlidingExpiration = true;
+    options.LoginPath = "/Account/Login";
+});
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ContactAppContext>()
+                .AddDefaultTokenProviders();
+
+// User needs to confirm email to access
+builder.Services.Configure<IdentityOptions>(opts =>
+{
+    opts.Password.RequiredLength = 8;
+    opts.Password.RequireLowercase = true;
+    opts.SignIn.RequireConfirmedEmail = true;
+});
+
+// Token for reset password
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(5));
+#endregion
 
 var app = builder.Build();
 
@@ -45,8 +67,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

@@ -1,18 +1,19 @@
 ﻿using ContactApp.Data.Services.Interfaces;
 using ContactApp.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ContactApp.Controllers
 {
+    [Authorize]
     public class ContactsController : Controller
     {
         private readonly IContactService _contactService;
 
         public ContactsController(
             IContactService contactService
-            )
+        )
         {
             _contactService = contactService;
         }
@@ -52,19 +53,19 @@ namespace ContactApp.Controllers
             return View();
         }
 
-        //// POST: Contacts/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Age,Address,Phone,Created,LastUpdate,CreatedBy,LastUpdateBy")] Contact contact)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(contact);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(contact);
-        //}
+        // POST: Contacts/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Age,Address,Phone,Created,LastUpdate,CreatedBy,LastUpdateBy")] Contact contact)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(contact);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(contact);
+        }
 
         //// GET: Contacts/Edit/5
         //public async Task<IActionResult> Edit(int? id)

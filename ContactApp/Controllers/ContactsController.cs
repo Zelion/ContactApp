@@ -55,6 +55,7 @@ namespace ContactApp.Controllers
             return View(contactDTO);
         }
 
+        #region Create
         // GET: Contacts/Create
         public IActionResult Create()
         {
@@ -81,7 +82,9 @@ namespace ContactApp.Controllers
 
             return View(contactDTO);
         }
+        #endregion
 
+        #region Edit
         //// GET: Contacts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -115,7 +118,9 @@ namespace ContactApp.Controllers
 
             return View(contactDTO);
         }
+        #endregion
 
+        #region Delete
         //// GET: Contacts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -144,5 +149,7 @@ namespace ContactApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        #endregion
+
     }
 }

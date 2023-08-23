@@ -7,6 +7,7 @@ using ContactApp.Data.Services.Interfaces;
 using ContactApp.Data.UnitsOfWork;
 using ContactApp.Data.UnitsOfWork.Interfaces;
 using ContactApp.Domain.Entities;
+using ContactApp.Domain.Settings;
 using ContactApp.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(MapperConfig));
+
+// appsettings
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+
 builder.Services.AddControllersWithViews();
 
 // Azure database
@@ -27,6 +35,7 @@ builder.Services.AddDbContext<ContactAppContext>(options =>
 
 // Services
 builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Repositories
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -35,9 +44,6 @@ builder.Services.AddScoped<IApplicationUserRepository, ApplicationUserRepository
 
 // Units Of Work
 builder.Services.AddScoped<IContactUnitOfWork, ContactUnitOfWork>();
-
-// Manager
-//builder.Services.AddIdentityCore<TUser>();
 
 #region Identity
 
@@ -62,7 +68,8 @@ builder.Services.Configure<IdentityOptions>(opts =>
 });
 
 // Token for reset password
-builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(5));
+builder.Services.Configure<DataProtectionTokenProviderOptions>(
+    opts => opts.TokenLifespan = TimeSpan.FromHours(2));
 
 #endregion
 

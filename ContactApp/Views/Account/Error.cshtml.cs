@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ContactApp.Views.Email
+namespace ContactApp.Views.Account
 {
     public class ErrorModel : PageModel
     {

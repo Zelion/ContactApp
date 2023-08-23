@@ -1,12 +1,13 @@
 ﻿using ContactApp.Data.Configuration;
 using ContactApp.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace ContactApp.Data.Context
 {
-    public class ContactAppContext : IdentityDbContext
+    public class ContactAppContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
         private readonly IConfiguration _configuration;
         private readonly DbContextOptions _options;
@@ -20,11 +21,10 @@ namespace ContactApp.Data.Context
         : base(options)
         {
             _configuration = configuration;
-            _options = options; 
+            _options = options;
         }
 
         public DbSet<Contact> Contacts { get; set; }
-        //public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -1,4 +1,6 @@
-﻿using ContactApp.Data.Helpers;
+﻿using AutoMapper;
+using ContactApp.Data.Helpers;
+using ContactApp.Domain.Entities;
 using ContactApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,12 +12,15 @@ namespace ContactApp.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AccountController(UserManager<IdentityUser> userManager,
-                              SignInManager<IdentityUser> signInManager)
+        public AccountController(IMapper mapper,
+                                UserManager<ApplicationUser> userManager,
+                                SignInManager<ApplicationUser> signInManager)
         {
+            _mapper = mapper;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -32,11 +37,7 @@ namespace ContactApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                };
+                var user = _mapper.Map<ApplicationUser>(model);
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)

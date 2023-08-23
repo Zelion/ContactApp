@@ -1,9 +1,12 @@
 using ContactApp.Data.Context;
+using ContactApp.Data.Repositories;
 using ContactApp.Data.Repositories.Base;
+using ContactApp.Data.Repositories.Interfaces;
 using ContactApp.Data.Services;
 using ContactApp.Data.Services.Interfaces;
 using ContactApp.Data.UnitsOfWork;
 using ContactApp.Data.UnitsOfWork.Interfaces;
+using ContactApp.Domain.Entities;
 using ContactApp.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +30,14 @@ builder.Services.AddScoped<IContactService, ContactService>();
 
 // Repositories
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped<IContactRepository, ContactRepository>();
+builder.Services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
 
 // Units Of Work
 builder.Services.AddScoped<IContactUnitOfWork, ContactUnitOfWork>();
+
+// Manager
+//builder.Services.AddIdentityCore<TUser>();
 
 #region Identity
 
@@ -41,7 +49,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ContactAppContext>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+                .AddEntityFrameworkStores<ContactAppContext>()
                 .AddDefaultTokenProviders();
 
 // User needs to confirm email to access
@@ -54,6 +63,7 @@ builder.Services.Configure<IdentityOptions>(opts =>
 
 // Token for reset password
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(5));
+
 #endregion
 
 var app = builder.Build();

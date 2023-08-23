@@ -1,7 +1,8 @@
-﻿using AutoMapper;
-using ContactApp.Data.Services.Interfaces;
+﻿using ContactApp.Data.Services.Interfaces;
 using ContactApp.Domain.DTOs;
+using ContactApp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -10,28 +11,28 @@ namespace ContactApp.Controllers
     [Authorize]
     public class ContactsController : Controller
     {
-        private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IContactService _contactService;
 
         public ContactsController(
-            IMapper mapper,
+            UserManager<ApplicationUser> userManager,
             IContactService contactService
         )
         {
-            _mapper = mapper;
+            _userManager = userManager;
             _contactService = contactService;
         }
 
         // GET: Contacts
         public async Task<ActionResult<IEnumerable<ContactDTO>>> Index()
         {
-            var contacts = await _contactService.Get();
-            if (contacts.IsNullOrEmpty())
+            var userId = int.Parse(_userManager.GetUserId(User));
+            var contactDTOs = await _contactService.Get(userId);
+            if (contactDTOs.IsNullOrEmpty())
             {
-                return NotFound();
+                return View(contactDTOs);
             }
 
-            var contactDTOs = _mapper.Map<IEnumerable<ContactDTO>>(contacts);
 
             return View(contactDTOs);
         }
@@ -44,13 +45,14 @@ namespace ContactApp.Controllers
                 return NotFound();
             }
 
-            var contact = await _contactService.GetById(id);
-            if (contact == null)
+            var userId = int.Parse(_userManager.GetUserId(User));
+            var contactDTO = await _contactService.GetById(id, userId);
+            if (contactDTO == null)
             {
-                return NotFound();
+                return View(contactDTO);
             }
 
-            return View(contact);
+            return View(contactDTO);
         }
 
         // GET: Contacts/Create
@@ -71,7 +73,8 @@ namespace ContactApp.Controllers
 
             if (ModelState.IsValid)
             {
-                await _contactService.AddAsync(contactDTO);
+                var userId = int.Parse(_userManager.GetUserId(User));
+                await _contactService.AddAsync(contactDTO, userId);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -87,7 +90,8 @@ namespace ContactApp.Controllers
                 return NotFound();
             }
 
-            var contact = await _contactService.GetById(id);
+            var userId = int.Parse(_userManager.GetUserId(User));
+            var contact = await _contactService.GetById(id, userId);
             if (contact == null)
             {
                 return NotFound();
@@ -103,7 +107,8 @@ namespace ContactApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _contactService.UpdateAsync(contactDTO);
+                var userId = int.Parse(_userManager.GetUserId(User));
+                await _contactService.UpdateAsync(contactDTO, userId);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -119,7 +124,8 @@ namespace ContactApp.Controllers
                 return NotFound();
             }
 
-            var contact = await _contactService.GetById(id);
+            var userId = int.Parse(_userManager.GetUserId(User));
+            var contact = await _contactService.GetById(id, userId);
             if (contact == null)
             {
                 return NotFound();
@@ -133,7 +139,8 @@ namespace ContactApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _contactService.DeleteAsync(id);
+            var userId = int.Parse(_userManager.GetUserId(User));
+            await _contactService.DeleteAsync(id, userId);
 
             return RedirectToAction(nameof(Index));
         }

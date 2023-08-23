@@ -1,4 +1,5 @@
-﻿@model ContactApp.Domain.Entities.Contact
+﻿@using ContactApp.Domain.DTOs;
+@model ContactDTO
 
 @{
     ViewData["Title"] = "Edit";
@@ -50,5 +51,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

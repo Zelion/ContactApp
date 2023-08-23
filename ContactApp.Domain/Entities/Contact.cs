@@ -1,5 +1,6 @@
 ﻿using ContactApp.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContactApp.Domain.Entities
 {
@@ -18,5 +19,9 @@ namespace ContactApp.Domain.Entities
 
         [MaxLength(50)]
         public string? Phone { get; set; }
+
+        [ForeignKey("User")]
+        public int? UserId { get; set; }
+        public ApplicationUser? User { get; set; }
     }
 }

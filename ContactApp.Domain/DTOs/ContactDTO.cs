@@ -11,15 +11,16 @@ namespace ContactApp.Domain.DTOs
         public string? Address { get; set; }
         public string? Phone { get; set; }
 
-        public void Update(Contact contact, string userId)
+        public void Update(Contact contact, int userId)
         {
             contact.FirstName = FirstName;
             contact.LastName = LastName;
             contact.Age = Age;
             contact.Address = Address;
             contact.Phone = Phone;
+            contact.UserId = userId;
             contact.LastUpdate = DateTime.Now;
-            contact.LastUpdateBy = userId;
+            contact.LastUpdateBy = contact.User.UserName;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using ContactApp.Data.Context;
+using ContactApp.Data.Repositories;
 using ContactApp.Data.Repositories.Base;
+using ContactApp.Data.Repositories.Interfaces;
 using ContactApp.Data.UnitsOfWork.Interfaces;
 using ContactApp.Domain.Entities.Base;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,11 @@ namespace ContactApp.Data.UnitsOfWork
         public IBaseRepository<T> BaseRepository<T>() where T : BaseEntity
         {
             return new BaseRepository<T>(_dbContext);
+        }
+
+        public IContactRepository ContactRepository()
+        {
+            return new ContactRepository(_dbContext);
         }
 
         public async Task CommitAsync()

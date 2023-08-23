@@ -1,77 +1,83 @@
 ﻿using AutoMapper;
+using ContactApp.Data.Repositories.Interfaces;
 using ContactApp.Data.Services.Interfaces;
 using ContactApp.Data.UnitsOfWork.Interfaces;
 using ContactApp.Domain.DTOs;
 using ContactApp.Domain.Entities;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace ContactApp.Data.Services
 {
     public class ContactService : IContactService
     {
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         private readonly IContactUnitOfWork _contactUOM;
+        private readonly IApplicationUserRepository _applicationUserRepository;
 
-        private string _userId;
 
         public ContactService(
             IMapper mapper,
-            IHttpContextAccessor httpContextAccessor,
-            IContactUnitOfWork contactUOM)
+            IContactUnitOfWork contactUOM,
+            IApplicationUserRepository applicationUserRepository)
         {
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
-
             _contactUOM = contactUOM;
-
-            _userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _applicationUserRepository = applicationUserRepository;
         }
 
-        public async Task<IEnumerable<Contact>> Get()
+        public async Task<IEnumerable<ContactDTO>> Get(int userId)
         {
-            return await _contactUOM.BaseRepository<Contact>().GetAsync();
+            var contacts = await _contactUOM.ContactRepository().GetAsync(userId);
+            var contactDTOs = _mapper.Map<IEnumerable<ContactDTO>>(contacts);
+
+            return contactDTOs;
         }
 
-        public async Task<Contact> GetById(int? id)
+        public async Task<ContactDTO> GetById(int? id, int userId)
         {
-            return await _contactUOM.BaseRepository<Contact>().GetByIdAsync(id);
+            var contact = await _contactUOM.ContactRepository().GetByIdAsync(id, userId);
+            var contactDTO = _mapper.Map<ContactDTO>(contact);
+            return contactDTO;
         }
 
-        public async Task AddAsync(ContactDTO contactDTO)
+        public async Task AddAsync(ContactDTO contactDTO, int userId)
         {
             var contact = _mapper.Map<Contact>(contactDTO);
+
+            var user = _applicationUserRepository.GetById(userId);
+            if (user != null)
+            {
+                contact.User = user.Result;
+            }
+
             SetDefaultValues(contact);
 
-            await _contactUOM.BaseRepository<Contact>().AddAsync(contact);
+            await _contactUOM.ContactRepository().AddAsync(contact);
             await _contactUOM.CommitAsync();
         }
 
-        public async Task UpdateAsync(ContactDTO contactDTO)
+        public async Task UpdateAsync(ContactDTO contactDTO, int userId)
         {
-            var contact = await _contactUOM.BaseRepository<Contact>().GetByIdAsync(contactDTO.Id);
+            var contact = await _contactUOM.ContactRepository().GetByIdAsync(contactDTO.Id, userId);
             if (contact == null)
             {
                 return; // TODO: add error
             }
 
-            contactDTO.Update(contact, _userId);
+            contactDTO.Update(contact, userId);
 
-            _contactUOM.BaseRepository<Contact>().Update(contact);
+            _contactUOM.ContactRepository().Update(contact);
             await _contactUOM.CommitAsync();
         }
 
-        public async Task DeleteAsync(int? id)
+        public async Task DeleteAsync(int? id, int userId)
         {
-            var contact = await _contactUOM.BaseRepository<Contact>().GetByIdAsync(id);
+            var contact = await _contactUOM.ContactRepository().GetByIdAsync(id, userId);
             if (contact == null)
             {
                 return; // TODO: add error
             }
 
-            _contactUOM.BaseRepository<Contact>().Delete(contact);
+            _contactUOM.ContactRepository().Delete(contact);
             await _contactUOM.CommitAsync();
         }
 
@@ -80,9 +86,9 @@ namespace ContactApp.Data.Services
         private void SetDefaultValues(Contact contact)
         {
             contact.Created = DateTime.Now;
-            contact.CreatedBy = _userId;
+            contact.CreatedBy = contact.User.UserName;
             contact.LastUpdate = DateTime.Now;
-            contact.LastUpdateBy = _userId;
+            contact.LastUpdateBy = contact.User.UserName;
         }
 
         #endregion

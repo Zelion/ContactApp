@@ -1,14 +1,13 @@
 ﻿using ContactApp.Domain.DTOs;
-using ContactApp.Domain.Entities;
 
 namespace ContactApp.Data.Services.Interfaces
 {
     public interface IContactService
     {
-        public Task<IEnumerable<Contact>> Get();
-        Task<Contact> GetById(int? id);
-        Task AddAsync(ContactDTO contactDTO);
-        Task UpdateAsync(ContactDTO contactDTO);
-        Task DeleteAsync(int? id);
+        public Task<IEnumerable<ContactDTO>> Get(int userId);
+        Task<ContactDTO> GetById(int? id, int userId);
+        Task AddAsync(ContactDTO contactDTO, int userId);
+        Task UpdateAsync(ContactDTO contactDTO, int userId);
+        Task DeleteAsync(int? id, int userId);
     }
 }

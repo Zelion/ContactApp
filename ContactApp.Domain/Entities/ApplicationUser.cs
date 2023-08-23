@@ -4,6 +4,6 @@ namespace ContactApp.Domain.Entities
 {
     public class ApplicationUser : IdentityUser<int>
     {
-        public IEnumerable<Contact> Contacts { get; set; }
+        public IEnumerable<Contact> Contacts { get; set; } = default!;
     }
 }

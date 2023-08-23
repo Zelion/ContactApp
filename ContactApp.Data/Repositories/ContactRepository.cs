@@ -28,7 +28,7 @@ namespace ContactApp.Data.Repositories
 
             AddFiltersOnQuery(ref query, search);
 
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
         public async Task AddAsync(Contact contact)
@@ -46,6 +46,7 @@ namespace ContactApp.Data.Repositories
             dbContext.Set<Contact>().Remove(contact);
         }
 
+        #region Private Methods
         private void AddFiltersOnQuery(ref IQueryable<Contact> query, string search)
         {
             if (!string.IsNullOrEmpty(search))
@@ -57,5 +58,7 @@ namespace ContactApp.Data.Repositories
                                     x.Phone.Contains(search));
             }
         }
+        #endregion
+
     }
 }

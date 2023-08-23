@@ -86,9 +86,9 @@ namespace ContactApp.Data.Services
         private void SetDefaultValues(Contact contact)
         {
             contact.Created = DateTime.Now;
-            contact.CreatedBy = contact.User.UserName;
+            contact.CreatedBy = contact.User?.UserName;
             contact.LastUpdate = DateTime.Now;
-            contact.LastUpdateBy = contact.User.UserName;
+            contact.LastUpdateBy = contact.User?.UserName;
         }
 
         #endregion

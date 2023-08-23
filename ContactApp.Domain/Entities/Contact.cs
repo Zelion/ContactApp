@@ -7,10 +7,10 @@ namespace ContactApp.Domain.Entities
     public class Contact : BaseEntity
     {
         [MaxLength(50)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = default!;
 
         [MaxLength(50)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = default!;
 
         public int Age { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using ContactApp.Data.Services.Interfaces;
 using ContactApp.Domain.DTOs;
 using ContactApp.Domain.Entities;
+using ContactApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,17 +25,19 @@ namespace ContactApp.Controllers
         }
 
         // GET: Contacts
-        public async Task<ActionResult<IEnumerable<ContactDTO>>> Index()
+        public async Task<IActionResult> Index(string search)
         {
-            var userId = int.Parse(_userManager.GetUserId(User));
-            var contactDTOs = await _contactService.Get(userId);
+            var contactVM = new ContactViewModel();
+
+            int.TryParse(_userManager.GetUserId(User), out int userId);
+            var contactDTOs = await _contactService.Get(userId, search);
             if (contactDTOs.IsNullOrEmpty())
             {
-                return View(contactDTOs);
+                return View(contactVM);
             }
 
-
-            return View(contactDTOs);
+            contactVM.Contacts = contactDTOs;
+            return View(contactVM);
         }
 
         // GET: Contacts/Details/5
@@ -45,7 +48,7 @@ namespace ContactApp.Controllers
                 return NotFound();
             }
 
-            var userId = int.Parse(_userManager.GetUserId(User));
+            int.TryParse(_userManager.GetUserId(User), out int userId);
             var contactDTO = await _contactService.GetById(id, userId);
             if (contactDTO == null)
             {
@@ -74,7 +77,7 @@ namespace ContactApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var userId = int.Parse(_userManager.GetUserId(User));
+                int.TryParse(_userManager.GetUserId(User), out int userId);
                 await _contactService.AddAsync(contactDTO, userId);
 
                 return RedirectToAction(nameof(Index));
@@ -93,7 +96,7 @@ namespace ContactApp.Controllers
                 return NotFound();
             }
 
-            var userId = int.Parse(_userManager.GetUserId(User));
+            int.TryParse(_userManager.GetUserId(User), out int userId);
             var contact = await _contactService.GetById(id, userId);
             if (contact == null)
             {
@@ -110,7 +113,7 @@ namespace ContactApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userId = int.Parse(_userManager.GetUserId(User));
+                int.TryParse(_userManager.GetUserId(User), out int userId);
                 await _contactService.UpdateAsync(contactDTO, userId);
 
                 return RedirectToAction(nameof(Index));
@@ -129,7 +132,7 @@ namespace ContactApp.Controllers
                 return NotFound();
             }
 
-            var userId = int.Parse(_userManager.GetUserId(User));
+            int.TryParse(_userManager.GetUserId(User), out int userId);
             var contact = await _contactService.GetById(id, userId);
             if (contact == null)
             {
@@ -144,7 +147,7 @@ namespace ContactApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var userId = int.Parse(_userManager.GetUserId(User));
+            int.TryParse(_userManager.GetUserId(User), out int userId);
             await _contactService.DeleteAsync(id, userId);
 
             return RedirectToAction(nameof(Index));

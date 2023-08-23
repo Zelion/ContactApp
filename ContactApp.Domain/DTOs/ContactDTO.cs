@@ -20,7 +20,7 @@ namespace ContactApp.Domain.DTOs
             contact.Phone = Phone;
             contact.UserId = userId;
             contact.LastUpdate = DateTime.Now;
-            contact.LastUpdateBy = contact.User.UserName;
+            contact.LastUpdateBy = contact.User?.UserName;
         }
     }
 }

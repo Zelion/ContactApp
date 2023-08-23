@@ -4,7 +4,7 @@ namespace ContactApp.Data.Services.Interfaces
 {
     public interface IContactService
     {
-        public Task<IEnumerable<ContactDTO>> Get(int userId);
+        public Task<IEnumerable<ContactDTO>> Get(int userId, string search);
         Task<ContactDTO> GetById(int? id, int userId);
         Task AddAsync(ContactDTO contactDTO, int userId);
         Task UpdateAsync(ContactDTO contactDTO, int userId);

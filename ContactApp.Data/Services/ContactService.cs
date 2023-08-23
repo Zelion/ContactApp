@@ -24,9 +24,9 @@ namespace ContactApp.Data.Services
             _applicationUserRepository = applicationUserRepository;
         }
 
-        public async Task<IEnumerable<ContactDTO>> Get(int userId)
+        public async Task<IEnumerable<ContactDTO>> Get(int userId, string search)
         {
-            var contacts = await _contactUOM.ContactRepository().GetAsync(userId);
+            var contacts = await _contactUOM.ContactRepository().GetAsync(userId, search);
             var contactDTOs = _mapper.Map<IEnumerable<ContactDTO>>(contacts);
 
             return contactDTOs;

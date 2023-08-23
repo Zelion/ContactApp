@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/ContactApp20230823095744/providers/Microsoft.ServiceLinker/linkers/vaevi.database.windows.net_942E3CEF46",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/vaevi/databases/Vaevi",
+      "type": "mssql.azure",
+      "connectionId": "vaevi.database.windows.net",
+      "dynamicId": null
+    }
+  }
+}

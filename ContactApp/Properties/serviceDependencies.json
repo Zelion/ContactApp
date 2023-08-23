@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "vaevi.database.windows.net",
+      "dynamicId": null
+    }
+  }
+}
